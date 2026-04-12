@@ -1,5 +1,5 @@
-import { useAppTheme } from '@/hooks/useAppTheme'
 import { Text, View } from 'react-native'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 export default function Index() {
 	const { colors } = useAppTheme()

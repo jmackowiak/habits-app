@@ -1,23 +1,21 @@
-import { colors } from '@/constants/colors'
 import { Ionicons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
-import { useColorScheme } from 'react-native'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 export default function TabLayout() {
-	const scheme = useColorScheme() ?? 'light'
-	const theme = colors[scheme]
+	const { colors } = useAppTheme()
 
 	return (
 		<Tabs
 			screenOptions={{
-				tabBarActiveTintColor: theme.active,
+				tabBarActiveTintColor: colors.active,
 				headerStyle: {
-					backgroundColor: theme.background,
+					backgroundColor: colors.background,
 				},
 				headerShadowVisible: false,
-				headerTintColor: theme.text,
+				headerTintColor: colors.text,
 				tabBarStyle: {
-					backgroundColor: theme.background,
+					backgroundColor: colors.background,
 				},
 			}}
 		>
