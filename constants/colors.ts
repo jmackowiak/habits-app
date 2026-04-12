@@ -5,7 +5,7 @@ export const colors = {
 		text: '#000',
 		muted: '#6B7280',
 		border: '#E5E7EB',
-		active: '#42f307',
+		active: '#FFD33D',
 	},
 	dark: {
 		background: '#000',
