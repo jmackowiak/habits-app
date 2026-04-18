@@ -1,8 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	createContext,
 	type Dispatch,
 	type ReactNode,
 	useContext,
+	useEffect,
 	useReducer,
 } from 'react'
 import type { Habit } from '@/types/habit'
@@ -10,6 +12,7 @@ import type { Habit } from '@/types/habit'
 type HabitsAction =
 	| { type: 'ADD_HABIT'; payload: { name: string } }
 	| { type: 'DELETE_HABIT'; payload: { id: string } }
+	| { type: 'LOAD_HABITS'; payload: { habits: Habit[] } }
 
 type HabitsState = {
 	habits: Habit[]
@@ -39,6 +42,10 @@ function habitsReducer(state: HabitsState, action: HabitsAction) {
 				...state,
 				habits: state.habits.filter((habit) => habit.id !== action.payload.id),
 			}
+		case 'LOAD_HABITS':
+			return {
+				habits: action.payload.habits,
+			}
 	}
 }
 
@@ -54,6 +61,21 @@ export function useHabits() {
 
 export function HabitsProvider({ children }: { children: ReactNode }) {
 	const [state, dispatch] = useReducer(habitsReducer, { habits: [] })
+
+	useEffect(() => {
+		async function load() {
+			const raw = await AsyncStorage.getItem('habits')
+			if (raw) {
+				dispatch({ type: 'LOAD_HABITS', payload: { habits: JSON.parse(raw) } })
+			}
+		}
+
+		load()
+	}, [])
+
+	useEffect(() => {
+		AsyncStorage.setItem('habits', JSON.stringify(state.habits))
+	}, [state.habits])
 
 	return (
 		<HabitsContext.Provider value={{ habits: state.habits, dispatch }}>
