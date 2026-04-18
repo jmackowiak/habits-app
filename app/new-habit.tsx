@@ -66,12 +66,16 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		paddingHorizontal: 16,
 		paddingVertical: 14,
+		height: 48,
 	},
 	button: {
 		borderRadius: 12,
 		paddingHorizontal: 16,
 		paddingVertical: 14,
 		bottom: 0,
+		marginBottom: 48,
+		height: 48,
+		justifyContent: 'center',
 	},
 	buttonText: {
 		textAlign: 'center',
