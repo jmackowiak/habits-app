@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useAppTheme } from '@/hooks/useAppTheme'
 
 export default function StatisticsScreen() {
@@ -6,7 +6,6 @@ export default function StatisticsScreen() {
 
 	return (
 		<View style={[styles.container, { backgroundColor: colors.background }]}>
-			<Text style={{ color: colors.text }}>Stats</Text>
 		</View>
 	)
 }
