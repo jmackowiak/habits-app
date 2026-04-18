@@ -13,6 +13,7 @@ type HabitsAction =
 	| { type: 'ADD_HABIT'; payload: { name: string } }
 	| { type: 'DELETE_HABIT'; payload: { id: string } }
 	| { type: 'LOAD_HABITS'; payload: { habits: Habit[] } }
+	| { type: 'TOGGLE_HABIT'; payload: { id: string; date: string } }
 
 type HabitsState = {
 	habits: Habit[]
@@ -33,7 +34,8 @@ function habitsReducer(state: HabitsState, action: HabitsAction) {
 					{
 						id: Date.now().toString(),
 						name: action.payload.name,
-						createdAt: new Date().toISOString(),
+						createdAt: new Date().toISOString().split('T')[0],
+						completedDates: [],
 					},
 				],
 			}
@@ -46,6 +48,24 @@ function habitsReducer(state: HabitsState, action: HabitsAction) {
 			return {
 				habits: action.payload.habits,
 			}
+		case 'TOGGLE_HABIT': {
+			return {
+				...state,
+				habits: state.habits.map((habit) => {
+					if (habit.id !== action.payload.id) return habit
+
+					const todayDate = action.payload.date
+					const isCompleted = habit.completedDates.includes(todayDate)
+
+					return {
+						...habit,
+						completedDates: isCompleted
+							? habit.completedDates.filter((date) => date !== todayDate)
+							: [...habit.completedDates, todayDate],
+					}
+				}),
+			}
+		}
 	}
 }
 

@@ -1,23 +1,32 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useHabits } from '@/contexts/habits'
 import { useAppTheme } from '@/hooks/useAppTheme'
 
 export default function Index() {
 	const { colors } = useAppTheme()
-	const { habits } = useHabits()
+	const { habits, dispatch } = useHabits()
 
-	const formattedDate = new Date().toLocaleDateString('pl-PL', {
-		weekday: 'long',
-		day: 'numeric',
-		month: 'long',
-	})
+	const todayDate = new Date().toISOString().split('T')[0]
+
+	function handleHabitToggle(id: string) {
+		dispatch({
+			type: 'TOGGLE_HABIT',
+			payload: { id, date: todayDate },
+		})
+	}
 
 	return (
 		<>
 			<View
 				style={[styles.dateContainer, { backgroundColor: colors.background }]}
 			>
-				<Text style={{ color: colors.text }}>{formattedDate}</Text>
+				<Text style={{ color: colors.text }}>
+					{new Date().toLocaleDateString('pl-PL', {
+						weekday: 'long',
+						day: 'numeric',
+						month: 'long',
+					})}
+				</Text>
 			</View>
 			<View
 				style={[
@@ -31,7 +40,12 @@ export default function Index() {
 					data={habits}
 					keyExtractor={(habit) => habit.id}
 					renderItem={({ item }) => (
-						<Text style={{ color: colors.text }}>{item.name}</Text>
+						<Pressable onPress={() => handleHabitToggle(item.id)}>
+							<Text style={{ color: colors.text }}>
+								{item.completedDates.includes(todayDate) ? '✅' : '⬜'}{' '}
+								{item.name}
+							</Text>
+						</Pressable>
 					)}
 				/>
 			</View>
