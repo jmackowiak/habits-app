@@ -1,10 +1,20 @@
+import { router } from 'expo-router'
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { useHabits } from '@/contexts/habits'
 import { useAppTheme } from '@/hooks/useAppTheme'
 
 export default function NewHabitScreen() {
 	const { colors } = useAppTheme()
 	const [name, setName] = useState('')
+	const { dispatch } = useHabits()
+
+	const isDisabled = !!(name === '' || name === ' ')
+
+	function handleHabitAdd() {
+		dispatch({ type: 'ADD_HABIT', payload: { name } })
+		router.back()
+	}
 
 	return (
 		<View
@@ -13,8 +23,31 @@ export default function NewHabitScreen() {
 				{ backgroundColor: colors.background, height: 20 },
 			]}
 		>
-			<Text style={{ color: colors.text }}>Name:</Text>
-			<TextInput onChangeText={setName} placeholder="Habit name" value={name} />
+			<View>
+				<TextInput
+					onChangeText={setName}
+					placeholder="Name"
+					style={[styles.input, { color: colors.text }]}
+					value={name}
+				/>
+			</View>
+			<Pressable
+				disabled={isDisabled}
+				onPress={() => handleHabitAdd()}
+				style={[
+					styles.button,
+					{ backgroundColor: !isDisabled ? colors.active : colors.muted },
+				]}
+			>
+				<Text
+					style={[
+						styles.buttonText,
+						{ color: !isDisabled ? colors.background : colors.text },
+					]}
+				>
+					Add
+				</Text>
+			</Pressable>
 		</View>
 	)
 }
@@ -23,8 +56,8 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: 24,
-		justifyContent: 'center',
 		gap: 16,
+		justifyContent: 'space-between',
 	},
 	title: { fontSize: 28, fontWeight: 700 },
 	input: {
@@ -34,5 +67,13 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		paddingVertical: 14,
 	},
-	button: {},
+	button: {
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		paddingVertical: 14,
+		bottom: 0,
+	},
+	buttonText: {
+		textAlign: 'center',
+	},
 })
