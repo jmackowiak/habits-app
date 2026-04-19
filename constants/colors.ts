@@ -22,3 +22,13 @@ export const colors = {
 		success: '#10B981',
 	},
 }
+
+export const accentColors = [
+	{ name: 'Amber', value: '#F59E0B' },
+	{ name: 'Orange', value: '#F97316' },
+	{ name: 'Blue', value: '#3B82F6' },
+	{ name: 'Indigo', value: '#6366F1' },
+	{ name: 'Purple', value: '#8B5CF6' },
+	{ name: 'Pink', value: '#EC4899' },
+	{ name: 'Teal', value: '#14B8A6' },
+]

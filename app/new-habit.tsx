@@ -88,7 +88,7 @@ export default function NewHabitScreen() {
 						},
 					]}
 				>
-					Add Habit
+					Add
 				</Text>
 			</Pressable>
 		</KeyboardAvoidingView>
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
 	button: {
 		borderRadius: 16,
 		paddingVertical: 16,
-		marginBottom: 60,
+		marginBottom: 24,
 	},
 	buttonText: {
 		textAlign: 'center',
