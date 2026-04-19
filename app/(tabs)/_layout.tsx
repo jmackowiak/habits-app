@@ -30,6 +30,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="index"
 				options={{
+					title: 'Today',
 					headerTitle: () => (
 						<View style={styles.headerTitleContainer}>
 							<Text style={[styles.headerTitle, { color: colors.text }]}>
