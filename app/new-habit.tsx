@@ -1,83 +1,161 @@
+import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import {
+	KeyboardAvoidingView,
+	Platform,
+	Pressable,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
+} from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useHabits } from '@/contexts/habits'
 import { useAppTheme } from '@/hooks/useAppTheme'
 
 export default function NewHabitScreen() {
 	const { colors } = useAppTheme()
+	const { top } = useSafeAreaInsets()
 	const [name, setName] = useState('')
 	const { dispatch } = useHabits()
 
-	const isDisabled = !!(name === '' || name === ' ')
+	const isDisabled = name.trim() === ''
 
 	function handleHabitAdd() {
-		dispatch({ type: 'ADD_HABIT', payload: { name } })
+		dispatch({ type: 'ADD_HABIT', payload: { name: name.trim() } })
 		router.back()
 	}
 
 	return (
-		<View
-			style={[
-				styles.container,
-				{ backgroundColor: colors.background, height: 20 },
-			]}
+		<KeyboardAvoidingView
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+			style={[styles.container, { backgroundColor: colors.background }]}
 		>
 			<View>
-				<TextInput
-					onChangeText={setName}
-					placeholder="Name"
-					style={[styles.input, { color: colors.text }]}
-					value={name}
-				/>
+				<View style={[styles.header, { paddingTop: top + 16 }]}>
+					<Pressable
+						onPress={() => router.back()}
+						style={[styles.closeButton, { borderColor: colors.muted }]}
+					>
+						<Ionicons color={colors.muted} name="close" size={16} />
+					</Pressable>
+					<Text style={[styles.headerTitle, { color: colors.text }]}>
+						Add Habit
+					</Text>
+					<View style={styles.headerSpacer} />
+				</View>
+				<View style={[styles.separator, { backgroundColor: colors.border }]} />
+				<View style={styles.form}>
+					<View
+						style={[styles.inputContainer, { backgroundColor: colors.surface }]}
+					>
+						<View
+							style={[styles.inputIcon, { backgroundColor: colors.active }]}
+						>
+							<Ionicons
+								color={colors.background}
+								name="star-outline"
+								size={20}
+							/>
+						</View>
+						<TextInput
+							autoFocus
+							onChangeText={setName}
+							placeholder="Habit name"
+							placeholderTextColor={colors.muted}
+							style={[styles.input, { color: colors.text }]}
+							value={name}
+						/>
+					</View>
+				</View>
 			</View>
 			<Pressable
 				disabled={isDisabled}
-				onPress={() => handleHabitAdd()}
+				onPress={handleHabitAdd}
 				style={[
 					styles.button,
-					{ backgroundColor: !isDisabled ? colors.active : colors.muted },
+					{
+						backgroundColor: isDisabled ? colors.surface : colors.active,
+					},
 				]}
 			>
 				<Text
 					style={[
 						styles.buttonText,
-						{ color: !isDisabled ? colors.background : colors.text },
+						{
+							color: isDisabled ? colors.muted : colors.background,
+						},
 					]}
 				>
-					Add
+					Add Habit
 				</Text>
 			</Pressable>
-		</View>
+		</KeyboardAvoidingView>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 24,
-		gap: 16,
 		justifyContent: 'space-between',
-	},
-	title: { fontSize: 28, fontWeight: 700 },
-	input: {
-		borderWidth: 1,
-		borderColor: '#D1D5DB',
-		borderRadius: 12,
 		paddingHorizontal: 16,
-		paddingVertical: 14,
-		height: 48,
+	},
+	header: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingBottom: 16,
+	},
+	closeButton: {
+		width: 28,
+		height: 28,
+		borderRadius: 14,
+		borderWidth: 2,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	headerTitle: {
+		flex: 1,
+		textAlign: 'center',
+		fontSize: 17,
+		fontWeight: '600',
+	},
+	headerSpacer: {
+		width: 28,
+	},
+	separator: {
+		height: 1,
+		marginBottom: 16,
+	},
+	form: {
+		gap: 12,
+	},
+	inputContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		borderRadius: 16,
+		padding: 12,
+		gap: 12,
+	},
+	inputIcon: {
+		width: 40,
+		height: 40,
+		borderRadius: 12,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	input: {
+		flex: 1,
+		fontSize: 16,
 	},
 	button: {
-		borderRadius: 12,
-		paddingHorizontal: 16,
-		paddingVertical: 14,
-		bottom: 0,
-		marginBottom: 48,
-		height: 48,
-		justifyContent: 'center',
+		borderRadius: 16,
+		paddingVertical: 16,
+		marginBottom: 60,
 	},
 	buttonText: {
 		textAlign: 'center',
+		fontSize: 16,
+		fontWeight: '600',
 	},
 })

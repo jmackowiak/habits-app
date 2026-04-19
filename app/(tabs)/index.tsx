@@ -1,4 +1,8 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { useMemo } from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated'
 import { useHabits } from '@/contexts/habits'
 import { useAppTheme } from '@/hooks/useAppTheme'
 
@@ -6,7 +10,18 @@ export default function Index() {
 	const { colors } = useAppTheme()
 	const { habits, dispatch } = useHabits()
 
-	const todayDate = new Date().toISOString().split('T')[0]
+	const today = new Date()
+	const todayDate = today.toISOString().split('T')[0]
+	const sortedHabits = useMemo(() => {
+		return [...habits].sort((a, b) => {
+			const aCompleted = a.completedDates.includes(todayDate)
+			const bCompleted = b.completedDates.includes(todayDate)
+
+			if (aCompleted === bCompleted) return 0
+
+			return aCompleted ? 1 : -1
+		})
+	}, [habits, todayDate])
 
 	function handleHabitToggle(id: string) {
 		dispatch({
@@ -15,53 +30,152 @@ export default function Index() {
 		})
 	}
 
+	function handleHabitDelete(id: string) {
+		dispatch({
+			type: 'DELETE_HABIT',
+			payload: { id },
+		})
+	}
+
+	function renderRightActions(id: string) {
+		return (
+			<Pressable
+				onPress={() => handleHabitDelete(id)}
+				style={[styles.deleteButton, { backgroundColor: colors.danger }]}
+			>
+				<Ionicons color="#FFF" name="trash-outline" size={22} />
+			</Pressable>
+		)
+	}
+
 	return (
-		<>
-			<View
-				style={[styles.dateContainer, { backgroundColor: colors.background }]}
-			>
-				<Text style={{ color: colors.text }}>
-					{new Date().toLocaleDateString('pl-PL', {
-						weekday: 'long',
-						day: 'numeric',
-						month: 'long',
-					})}
-				</Text>
-			</View>
-			<View
-				style={[
-					styles.habitsContainer,
-					{
-						backgroundColor: colors.background,
-					},
-				]}
-			>
-				<FlatList
-					data={habits}
-					keyExtractor={(habit) => habit.id}
-					renderItem={({ item }) => (
-						<Pressable onPress={() => handleHabitToggle(item.id)}>
-							<Text style={{ color: colors.text }}>
-								{item.completedDates.includes(todayDate) ? '✅' : '⬜'}{' '}
-								{item.name}
-							</Text>
-						</Pressable>
-					)}
-				/>
-			</View>
-		</>
+		<View style={[styles.container, { backgroundColor: colors.background }]}>
+			<View style={[styles.separator, { backgroundColor: colors.border }]} />
+			<ScrollView contentContainerStyle={styles.list}>
+				{sortedHabits.map((item) => {
+					const isCompleted = item.completedDates.includes(todayDate)
+
+					return (
+						<Animated.View
+							exiting={FadeOut.duration(200)}
+							key={item.id}
+							layout={LinearTransition.duration(300)}
+						>
+							<ReanimatedSwipeable
+								renderRightActions={() => renderRightActions(item.id)}
+							>
+								<Pressable
+									onPress={() => handleHabitToggle(item.id)}
+									style={[
+										styles.card,
+										{
+											backgroundColor: colors.surface,
+											opacity: isCompleted ? 0.5 : 1,
+										},
+									]}
+								>
+									<View
+										style={[
+											styles.iconContainer,
+											{ backgroundColor: colors.active },
+										]}
+									>
+										<Ionicons
+											color={colors.background}
+											name="star-outline"
+											size={24}
+										/>
+									</View>
+									<View style={styles.cardContent}>
+										<Text
+											style={[
+												styles.habitName,
+												{
+													color: colors.text,
+													textDecorationLine: isCompleted
+														? 'line-through'
+														: 'none',
+												},
+											]}
+										>
+											{item.name}
+										</Text>
+									</View>
+									<View
+										style={[
+											styles.checkbox,
+											{
+												backgroundColor: isCompleted
+													? colors.success
+													: 'transparent',
+												borderColor: isCompleted
+													? colors.success
+													: colors.muted,
+											},
+										]}
+									>
+										{isCompleted && (
+											<Ionicons color="#FFF" name="checkmark" size={16} />
+										)}
+									</View>
+								</Pressable>
+							</ReanimatedSwipeable>
+						</Animated.View>
+					)
+				})}
+			</ScrollView>
+		</View>
 	)
 }
 
 const styles = StyleSheet.create({
-	dateContainer: {
-		alignItems: 'center',
+	container: {
+		flex: 1,
 		paddingTop: 6,
 	},
-	habitsContainer: {
-		flex: 1,
+	separator: {
+		height: 1,
+		marginHorizontal: 16,
+		marginBottom: 16,
+	},
+	list: {
+		paddingHorizontal: 16,
+		gap: 10,
+	},
+	card: {
+		borderRadius: 16,
+		padding: 16,
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+	},
+	iconContainer: {
+		width: 44,
+		height: 44,
+		borderRadius: 12,
 		justifyContent: 'center',
 		alignItems: 'center',
-		paddingTop: 24,
+	},
+	cardContent: {
+		flex: 1,
+	},
+	habitName: {
+		fontSize: 16,
+		fontWeight: '600',
+	},
+	checkbox: {
+		width: 28,
+		height: 28,
+		borderRadius: 14,
+		borderWidth: 2,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	deleteButton: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingHorizontal: 24,
+		borderRadius: 16,
+		marginLeft: 8,
 	},
 })
