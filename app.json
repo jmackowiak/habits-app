@@ -10,7 +10,8 @@
 		"newArchEnabled": true,
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "com.jmackowak.habits-app"
+			"bundleIdentifier": "com.jmackowak.habits-app",
+			"appleTeamId": "2JV36JPA2J"
 		},
 		"android": {
 			"adaptiveIcon": {
