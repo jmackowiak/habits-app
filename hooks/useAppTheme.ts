@@ -1,12 +1,19 @@
 import { useColorScheme } from 'react-native'
 import { colors } from '@/constants/colors'
+import { useTheme } from '@/contexts/theme'
 
 export function useAppTheme() {
-	const scheme = useColorScheme() ?? 'light'
+	const systemScheme = useColorScheme() ?? 'light'
+	const { accentColor, themeMode } = useTheme()
+
+	const schema = themeMode === 'system' ? systemScheme : themeMode
 
 	return {
-		scheme,
-		isDark: scheme === 'dark',
-		colors: colors[scheme],
+		schema,
+		isDark: schema === 'dark',
+		colors: {
+			...colors[schema],
+			active: accentColor,
+		},
 	}
 }
