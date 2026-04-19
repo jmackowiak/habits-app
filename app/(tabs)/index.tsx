@@ -136,11 +136,12 @@ const styles = StyleSheet.create({
 	separator: {
 		height: 1,
 		marginHorizontal: 16,
-		marginBottom: 16,
 	},
 	list: {
 		paddingHorizontal: 16,
 		gap: 10,
+		marginTop: 16,
+		paddingBottom: 16,
 	},
 	card: {
 		borderRadius: 16,
