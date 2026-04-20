@@ -6,6 +6,7 @@ import {
 	useContext,
 	useEffect,
 	useReducer,
+	useState,
 } from 'react'
 import type { Habit } from '@/types/habit'
 
@@ -81,6 +82,7 @@ export function useHabits() {
 
 export function HabitsProvider({ children }: { children: ReactNode }) {
 	const [state, dispatch] = useReducer(habitsReducer, { habits: [] })
+	const [isLoaded, setIsLoaded] = useState(false)
 
 	useEffect(() => {
 		async function load() {
@@ -88,14 +90,16 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 			if (raw) {
 				dispatch({ type: 'LOAD_HABITS', payload: { habits: JSON.parse(raw) } })
 			}
+			setIsLoaded(true)
 		}
 
 		load()
 	}, [])
 
 	useEffect(() => {
+		if (!isLoaded) return
 		AsyncStorage.setItem('habits', JSON.stringify(state.habits))
-	}, [state.habits])
+	}, [state.habits, isLoaded])
 
 	return (
 		<HabitsContext.Provider value={{ habits: state.habits, dispatch }}>

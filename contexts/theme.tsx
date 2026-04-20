@@ -30,6 +30,7 @@ export function useTheme() {
 export function ThemeProvider({ children }: { children: ReactNode }) {
 	const [accentColor, setAccentColor] = useState(accentColors[0].value)
 	const [themeMode, setThemeMode] = useState<ThemeMode>('system')
+	const [isLoaded, setIsLoaded] = useState(false)
 
 	useEffect(() => {
 		async function load() {
@@ -37,18 +38,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 			const savedThemeMode = await AsyncStorage.getItem('themeMode')
 			if (savedAccentColor) setAccentColor(savedAccentColor)
 			if (savedThemeMode) setThemeMode(savedThemeMode as ThemeMode)
+			setIsLoaded(true)
 		}
 
 		load()
 	}, [])
 
 	useEffect(() => {
+		if (!isLoaded) return
 		AsyncStorage.setItem('accentColor', accentColor)
-	}, [accentColor])
+	}, [accentColor, isLoaded])
 
 	useEffect(() => {
+		if (!isLoaded) return
 		AsyncStorage.setItem('themeMode', themeMode)
-	}, [themeMode])
+	}, [themeMode, isLoaded])
 
 	return (
 		<ThemeContext.Provider
