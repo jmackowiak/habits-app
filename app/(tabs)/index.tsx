@@ -1,25 +1,16 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useFocusEffect } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated'
 import { useHabits } from '@/contexts/habits'
 import { useAppTheme } from '@/hooks/useAppTheme'
+import { useTodayDate } from '@/hooks/useTodayDate'
 
 export default function Index() {
 	const { colors } = useAppTheme()
 	const { habits, dispatch } = useHabits()
-
-	const [todayDate, setTodayDate] = useState(
-		new Date().toISOString().split('T')[0],
-	)
-
-	useFocusEffect(
-		useCallback(() => {
-			setTodayDate(new Date().toISOString().split('T')[0])
-		}, []),
-	)
+	const todayDate = useTodayDate()
 
 	const sortedHabits = useMemo(() => {
 		return [...habits].sort((a, b) => {
